@@ -5,7 +5,7 @@ extractIpV4 :: Network.Info.NetworkInterface -> String -- formatted like "interf
 extractIpV4 iface = (Network.Info.name iface) ++ ": " ++ (show (Network.Info.ipv4 iface))
 
 formatInterfaces :: [Network.Info.NetworkInterface] -> String -- format each interface and separate results by newlines
-formatInterfaces ifaceList = concat (Data.List.intersperse "\n" (map extractIpV4 ifaceList))
+formatInterfaces ifaceList = Data.List.intercalate "\n" (map extractIpV4 ifaceList)
 
 main = do
     addrs <- Network.Info.getNetworkInterfaces
