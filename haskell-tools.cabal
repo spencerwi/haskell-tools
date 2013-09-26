@@ -7,7 +7,6 @@ synopsis:            A collection of small unix utils written in haskell
 -- description:         
 homepage:            http://github.com/spencerwi/haskell-tools
 license:             MIT
-license-file:        LICENSE
 author:              Spencer Williams
 maintainer:          
 -- copyright:           
@@ -18,12 +17,12 @@ cabal-version:       >=1.8
 executable ips
   main-is:             ips.hs
   -- other-modules:       
-  build-depends:       base ==4.5.*
+  build-depends:       base >=4.5, network-info
 
 executable tsvtocsv
-  main-is:              tsvtocsv.hs 
-  build-depends:        base ==4.5.*, network-info
+  main-is:             tsvtocsv.hs 
+  build-depends:       base >=4.5, regex-compat >= 0.95
 
 executable timesince
-  main-is:              timesince.hs
-  build-depends:       base ==4.5.*
+  main-is:             timesince.hs
+  build-depends:       base >=4.5, time >= 1.4, old-locale >= 1.0
