@@ -1,4 +1,5 @@
 import Data.List (isInfixOf, zip)
+import System.Exit (exitFailure)
 import System.Locale (defaultTimeLocale)
 import System.Environment (getArgs)
 import Data.Time
@@ -24,15 +25,25 @@ breakDownToFriendlyOutput seconds
         remHours x = x `rem` (60*60)
         remDays x = x `rem` (60*60*24)
 
+diffFromNow :: LocalTime -> IO Integer
+diffFromNow date = do
+    now <- getCurrentTime
+    localTimeZone <- getCurrentTimeZone
+    return $ round (diffUTCTime now (localTimeToUTC localTimeZone date))
+
 formatOutput :: LocalTime -> Integer -> String
 formatOutput time difference = (breakDownToFriendlyOutput difference)  ++ "since " ++ (show time)
 
 main = do
-    now <- getCurrentTime
-    localTimeZone <- getCurrentTimeZone
-    
-    dates <- fmap (map parseAsLocalTime) getArgs
-    -- This next step is ugly. Looks like a refactor candidate.
-    let timeDifferences = map (round . (diffUTCTime now) . (localTimeToUTC localTimeZone)) dates
-    let outputStrings = zipWith formatOutput dates timeDifferences
-    mapM_ putStrLn outputStrings
+    args <- getArgs
+    case args of
+        [] -> do 
+                putStrLn "Usage: timesince DATESTRING..."
+                putStrLn "Accepts dates in YYYY-MM-DD or YYYY-MM-DD HH:mm format (24-hour)"
+                exitFailure
+        _ -> do
+                let dates = map parseAsLocalTime args
+                
+                timeDifferences <- mapM diffFromNow dates
+                let outputStrings = zipWith formatOutput dates timeDifferences
+                mapM_ putStrLn outputStrings
