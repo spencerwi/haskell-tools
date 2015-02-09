@@ -1,11 +1,12 @@
-import qualified Network.Info as Net
+module IPs where
 
-extractIpV4 :: Net.NetworkInterface -> String -- formatted like "interface_name: ipv4_addr"
-extractIpV4 iface = (Net.name iface) ++ ": " ++ ((show . Net.ipv4) iface)
+import Network.Info as Net
+import Control.Monad (filterM)
 
-formatInterfaces :: [Net.NetworkInterface] -> [String] -- format each interface and separate results by newlines
-formatInterfaces = map extractIpV4
+isIPv4Up :: Net.NetworkInterface -> Bool
+isIPv4Up = ((/=) "0.0.0.0") . show . ipv4
 
-main = do
-    addrs <- fmap formatInterfaces Net.getNetworkInterfaces
-    mapM_ putStrLn addrs
+formatInterface :: Net.NetworkInterface -> String
+formatInterface iface = (Net.name iface) ++ ": " ++ ((show . Net.ipvr) iface)
+
+main = Net.getNetworkInterfaces >>= filterM (return . isIPv4UP) >>= mapM_ (putStrLn . formatInterface)
